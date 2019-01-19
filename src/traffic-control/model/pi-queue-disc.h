@@ -166,6 +166,24 @@ private:
   double m_b;                                   //!< Parameter to PI controller
   double m_w;                                   //!< Sampling frequency (Number of times per second)
   bool m_useEcn;                                //!< True if ECN is used (packets are marked instead of being dropped)
+  double m_knrc                          {0.1}; //!< EWMA constant for estimation of N/RC
+  double m_kc                            {0.2}; //!< EWMA constant for capacity estimation
+  double m_thc                                ; //!< Estimated capacity
+  double m_oldThc                          {0}; //!< Old value of estimated capacity
+  double m_thnrc                              ; //!< Estimated N/RC
+  double m_oldThnrc                        {0}; //!< Old value of estimated N/RC
+  double m_nrc                                ; //!< Sampled N/RC
+  double m_oldnrc                          {0}; //!< Old value of sampled N/RC
+  double m_ki                                 ; //!< STPI parameter Ki used for probability calculation
+  double m_kp                                 ; //!< STPI parameter Kp used for probability calculation
+  double m_capacity                {150000000}; //!< Sampled capacity
+  double m_capacityOld                        ; //!< Sampled capacity
+  bool m_stpi                          {false}; //!< Boolean variable to enable/disable STPI feature
+  uint32_t m_deptPackets                   {0}; //!< Departed packets
+  double m_routerBusyTime                     ; //!< Router's Busy time
+  double m_bpi                           {0.5}; // STPI's Beta
+  double m_rtt                        {0.0075}; // RTT
+  Time m_updateTime                       {0.0};
 
   // ** Variables maintained by PI
   TracedValue<double> m_dropProb;               //!< Variable used in calculation of drop probability
