@@ -307,9 +307,11 @@ void PiQueueDisc::CalculateP ()
       if (m_routerBusyTime > 0)
         {
           m_capacity = double (m_deptPackets * 8) / m_routerBusyTime;
-          if (m_thc > 0)
+
+          if (m_capacity > 0)
             {
-              m_thc = (2 * 0.2 - 0.0025) / (2 * 0.2 + 0.0025) * m_oldThc + 0.0025 / (2 * 0.2 + 0.0025) * (m_capacityOld + m_capacity);
+//              m_thc = (2 * 0.2 - 0.0025) / (2 * 0.2 + 0.0025) * m_oldThc + 0.0025 / (2 * 0.2 + 0.0025) * (m_capacityOld + m_capacity);
+              m_thc = m_kc * m_capacity + (1 - m_kc) * m_oldThc;
             }
           else
            {
@@ -318,21 +320,26 @@ void PiQueueDisc::CalculateP ()
 
           if (m_dropProb > 0)
             {
-              if (m_capacity > 0)
-                {
-//                  m_rtt = (5 / m_capacity) * ((std::sqrt (2 / m_dropProb)));
-                }
-//              m_thnrc = m_knrc * (std::sqrt (m_dropProb / 2)) + ( 1 - m_knrc) * m_oldThnrc;
+              m_thnrc = m_knrc * (std::sqrt (m_dropProb / 2)) + ( 1 - m_knrc) * m_oldThnrc;
               m_kp = (2 * m_bpi * (std::sqrt ((m_bpi * m_bpi) + 1)) * m_thnrc) / (m_thc * m_rtt);
               m_ki = ((2 * m_thnrc) / m_rtt) * m_kp;
-              m_nrc = std::sqrt (m_dropProb / 2);
-              m_thnrc = (2 * 0.1 - 0.0025) / (2 * 0.1 + 0.0025) * m_oldThnrc + 0.0025 / (2 * 0.1 + 0.0025) * ( m_nrc + m_oldnrc);
+//              m_nrc = std::sqrt (m_dropProb / 2);
+//              m_thnrc = (2 * 0.1 - 0.0025) / (2 * 0.1 + 0.0025) * m_oldThnrc + 0.0025 / (2 * 0.1 + 0.0025) * ( m_nrc + m_oldnrc);
 //              double z = 2 * m_thnrc / m_rtt;
-              m_kp = std::sqrt ( m_bpi * m_bpi + 1) * m_bpi * 4 * m_thnrc * m_thnrc / m_rtt / m_rtt / m_thc;
+//              m_kp = std::sqrt ( m_bpi * m_bpi + 1) * m_bpi * 4 * m_thnrc * m_thnrc / m_rtt / m_rtt / m_thc;
 /*              m_a = m_kp * (1 / z + 0.0025 / 2);
               m_b = m_kp * (1 / z - 0.0025 / 2);*/
                 m_a = (m_ki / m_w / 2 + m_kp);
                 m_b = - (m_ki / m_w / 2 - m_kp);
+//              m_thnrc = m_knrc * (std::sqrt (m_dropProb / 2)) + ( 1 - m_knrc) * m_oldThnrc;
+//              m_nrc = std::sqrt (m_dropProb / 2);
+ //             m_thnrc = (2 * 0.1 - 0.0025) / (2 * 0.1 + 0.0025) * m_oldThnrc + 0.0025 / (2 * 0.1 + 0.0025) * ( m_nrc + m_oldnrc);
+//              double z = 2 * m_thnrc / m_rtt;
+//              m_kp = std::sqrt ( m_bpi * m_bpi + 1) * m_bpi * 4 * m_thnrc * m_thnrc / m_rtt / m_rtt / m_thc;
+/*              m_a = m_kp * (1 / z + 0.0025 / 2);
+              m_b = m_kp * (1 / z - 0.0025 / 2);*/
+              m_a = (m_ki / m_w / 2 + m_kp);
+              m_b = - (m_ki / m_w / 2 - m_kp);
               m_oldThc = m_thc;
               m_capacityOld = m_capacity;
               m_oldThnrc = m_thnrc;
