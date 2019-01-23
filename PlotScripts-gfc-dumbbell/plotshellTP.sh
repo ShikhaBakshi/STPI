@@ -43,6 +43,7 @@ cp overallTP.txt ../Graphs/
 #Cwnd plot
 cp gnuplotscriptQ ../
 cp gnuplotscriptCwnd ../cwndTraces/
+cp gnuplotscriptProb ../ProbTraces/
 
 cd ../queueTraces/
 echo "Queue 1" > QueueStatsAfter2sec.txt
@@ -59,3 +60,6 @@ cp config.txt Graphs/
 cd cwndTraces
 gnuplot gnuplotscriptCwnd
 cp Cwnd*.png ../Graphs/
+cd ../ProbTraces
+gnuplot gnuplotscriptProb
+cp Prob.png ../Graphs/

@@ -1,4 +1,4 @@
-set xrange [2:10]
+set xrange [2:100]
 set yrange [0:150]
 set ytics 10
 set terminal pngcairo enhanced color lw 2 size 800,600 font 'Arial-Bold'

@@ -1,0 +1,9 @@
+set xrange [0:100]
+set yrange [0:1]
+set terminal pngcairo enhanced color lw 2 size 800,600 font 'Arial-Bold'
+set output "Prob.png"
+set xlabel "Time (sec)"
+set ylabel "Probability"
+set key outside;
+set key right top;
+plot "prob.plotme" title "Probability" with lines lw 1.5

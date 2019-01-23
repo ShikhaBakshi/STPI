@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
 {
   uint32_t stream = 1;
   std::string transport_prot = "TcpNewReno";
-  std::string queue_disc_type = "PiQueueDisc";
+  std::string queue_disc_type = "FifoQueueDisc";
   bool useEcn = true;
   uint32_t dataSize = 1446;
   uint32_t delAckCount = 2;
@@ -218,7 +218,7 @@ int main (int argc, char *argv[])
   // Create the point-to-point link helpers
   PointToPointHelper pointToPointRouter;
   pointToPointRouter.SetDeviceAttribute  ("DataRate", StringValue ("150Mbps"));
-  pointToPointRouter.SetChannelAttribute ("Delay", StringValue ("1.25ms"));
+  pointToPointRouter.SetChannelAttribute ("Delay", StringValue ("0.00075ms"));
   NetDeviceContainer r1r2ND = pointToPointRouter.Install (routers.Get (0), routers.Get (1));
 
   std::vector <NetDeviceContainer> leftToRouter;
@@ -227,27 +227,27 @@ int main (int argc, char *argv[])
   pointToPointLeaf.SetDeviceAttribute    ("DataRate", StringValue ("150Mbps"));
 
   // Node 1
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("1.25ms"));
+  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.00025ms"));
   leftToRouter.push_back (pointToPointLeaf.Install (leftNodes.Get (0), routers.Get (0)));
   routerToRight.push_back (pointToPointLeaf.Install (routers.Get (1), rightNodes.Get (0)));
 
   // Node 2
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.5ms"));
+  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.0001ms"));
   leftToRouter.push_back (pointToPointLeaf.Install (leftNodes.Get (1), routers.Get (0)));
   routerToRight.push_back (pointToPointLeaf.Install (routers.Get (1), rightNodes.Get (1)));
 
   // Node 3
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.25ms"));
+  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.00005ms"));
   leftToRouter.push_back (pointToPointLeaf.Install (leftNodes.Get (2), routers.Get (0)));
   routerToRight.push_back (pointToPointLeaf.Install (routers.Get (1), rightNodes.Get (2)));
 
   // Node 4
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.125ms"));
+  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.000025ms"));
   leftToRouter.push_back (pointToPointLeaf.Install (leftNodes.Get (3), routers.Get (0)));
   routerToRight.push_back (pointToPointLeaf.Install (routers.Get (1), rightNodes.Get (3)));
 
   // Node 5
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.025ms"));
+  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("0.000005ms"));
   leftToRouter.push_back (pointToPointLeaf.Install (leftNodes.Get (4), routers.Get (0)));
   routerToRight.push_back (pointToPointLeaf.Install (routers.Get (1), rightNodes.Get (4)));
 
@@ -293,14 +293,14 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocketBase::UseEcn", BooleanValue (useEcn));
   Config::SetDefault ("ns3::PiQueueDisc::UseEcn", BooleanValue (useEcn));
   Config::SetDefault ("ns3::PiQueueDisc::MeanPktSize", UintegerValue (1500));
-  Config::SetDefault ("ns3::PiQueueDisc::A", DoubleValue (0.0002865244672));
-  Config::SetDefault ("ns3::PiQueueDisc::B", DoubleValue (0.0002681869013));
-  Config::SetDefault ("ns3::PiQueueDisc::Kp", DoubleValue (0.0002865244672));
-  Config::SetDefault ("ns3::PiQueueDisc::Ki", DoubleValue (0.0002681869013));
+  Config::SetDefault ("ns3::PiQueueDisc::A", DoubleValue (0.002013602268));
+  Config::SetDefault ("ns3::PiQueueDisc::Kp", DoubleValue (0.002013602268));
+  Config::SetDefault ("ns3::PiQueueDisc::Ki", DoubleValue (0.001342401512));
+  Config::SetDefault ("ns3::PiQueueDisc::B", DoubleValue (0.001342401512));
   Config::SetDefault ("ns3::PiQueueDisc::W", DoubleValue (400));
-  Config::SetDefault ("ns3::PiQueueDisc::QueueRef", DoubleValue (50));
   Config::SetDefault ("ns3::PiQueueDisc::STPI", BooleanValue(stpi));
-  Config::SetDefault (queue_disc_type + "::MaxSize", QueueSizeValue (QueueSize ("666p")));
+  Config::SetDefault ("ns3::PiQueueDisc::QueueRef", DoubleValue (10));
+  Config::SetDefault (queue_disc_type + "::MaxSize", QueueSizeValue (QueueSize ("38p")));
 
   AsciiTraceHelper asciiTraceHelper;
   Ptr<OutputStreamWrapper> streamWrapper;
@@ -315,6 +315,8 @@ int main (int argc, char *argv[])
   qd.Get (0)->TraceConnectWithoutContext ("Drop", MakeBoundCallback (&DropAtQueue, streamWrapper));
   streamWrapper = asciiTraceHelper.CreateFileStream (dir + "/queueTraces/mark-0.plotme");
   qd.Get (0)->TraceConnectWithoutContext ("Mark", MakeBoundCallback (&MarkAtQueue, streamWrapper));
+/*  std::string sojournTrFileName = dir + "/queueTraces/queue_delay.plotme";
+  TraceSojourn (sojournTrFileName);*/
   Simulator::Schedule (Seconds (0.0), &TraceProb, 0, 0, MakeCallback (&ProbChange));
 
   uint16_t port = 50000;
